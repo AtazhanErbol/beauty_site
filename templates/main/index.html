@@ -1,0 +1,311 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ site_settings.master_name|default:"Beauty Master" }} — наращивание ресниц и ламинирование бровей{% endblock %}
+
+{% block content %}
+<!-- HERO (full-screen) -->
+<section class="hero hero-fullscreen" id="hero">
+    <div class="hero-bg">
+        {% if site_settings.hero_video_file %}
+            <video class="hero-bg-img" autoplay muted loop playsinline>
+                <source src="{{ site_settings.hero_video_file.url }}" type="video/mp4">
+            </video>
+        {% elif site_settings.hero_image %}
+            <img src="{{ site_settings.hero_image.url }}" alt="" class="hero-bg-img">
+        {% endif %}
+        <div class="hero-bg-overlay"></div>
+        <div class="hero-bg-pattern"></div>
+    </div>
+
+    <div class="container hero-container">
+        <div class="hero-content">
+            <span class="hero-eyebrow">{{ site_settings.master_name|default:"Beauty Master" }}</span>
+            <h1 class="hero-title">{{ site_settings.hero_title|default:"Подчеркни свою красоту" }}</h1>
+            <p class="hero-subtitle">{{ site_settings.hero_subtitle|default:"Наращивание ресниц и ламинирование бровей — с заботой о каждой детали" }}</p>
+            <div class="hero-actions">
+                <a href="{% url 'booking' %}" class="btn btn-primary btn-lg">
+                    <i class="fa-solid fa-calendar-check"></i> Записаться онлайн
+                </a>
+                <a href="#services" class="btn btn-outline btn-lg">
+                    <i class="fa-solid fa-arrow-down"></i> Услуги
+                </a>
+            </div>
+
+            <div class="hero-highlights">
+                {% if site_settings.phone %}
+                <a href="tel:{{ site_settings.phone }}" class="hero-highlight">
+                    <i class="fa-solid fa-phone"></i>
+                    <span>{{ site_settings.phone }}</span>
+                </a>
+                {% endif %}
+                {% if site_settings.work_hours %}
+                <div class="hero-highlight">
+                    <i class="fa-solid fa-clock"></i>
+                    <span>{{ site_settings.work_hours }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <a href="#services" class="hero-scroll-indicator" aria-label="Прокрутить вниз">
+        <span></span>
+    </a>
+</section>
+
+<!-- SERVICES -->
+<section class="section services-section" id="services">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">Мои услуги</span>
+            <h2 class="section-title">Что я предлагаю</h2>
+            <p class="section-subtitle">Качественные процедуры с использованием профессиональных материалов</p>
+        </div>
+
+        <div class="services-grid">
+            {% for service in services %}
+            <article class="service-card">
+                <div class="service-icon">
+                    <i class="{{ service.icon }}"></i>
+                </div>
+                <h3 class="service-title">{{ service.title }}</h3>
+                <p class="service-description">{{ service.short_description }}</p>
+                <div class="service-meta">
+                    <span class="service-price">{{ service.price|floatformat:0 }} ₽</span>
+                    <span class="service-duration"><i class="fa-regular fa-clock"></i> {{ service.duration_minutes }} мин.</span>
+                </div>
+                <a href="{% url 'booking' %}?service={{ service.id }}" class="btn btn-primary btn-block">
+                    Записаться
+                </a>
+            </article>
+            {% empty %}
+            <p class="empty-state">Услуги скоро появятся.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ADVANTAGES -->
+<section class="section advantages-section" id="advantages">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">Почему выбирают меня</span>
+            <h2 class="section-title">Преимущества</h2>
+        </div>
+
+        <div class="advantages-grid">
+            {% for adv in advantages %}
+            <div class="advantage-card">
+                <div class="advantage-icon">
+                    <i class="{{ adv.icon }}"></i>
+                </div>
+                <h3 class="advantage-title">{{ adv.title }}</h3>
+                <p class="advantage-description">{{ adv.description }}</p>
+            </div>
+            {% empty %}
+            <p class="empty-state">Раздел в разработке.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- PORTFOLIO -->
+{% if portfolio_items %}
+<section class="section portfolio-section" id="portfolio">
+    <div class="container">
+        <div class="section-header">
+            <span class="section-eyebrow">Примеры работ</span>
+            <h2 class="section-title">Портфолио</h2>
+            <p class="section-subtitle">Нажмите на изображение, чтобы посмотреть в полном размере</p>
+        </div>
+
+        <div class="portfolio-grid" id="portfolio-grid">
+            {% for item in portfolio_items %}
+            <figure class="portfolio-item"
+                    data-src="{{ item.image.url }}"
+                    data-title="{{ item.display_title|escape }}"
+                    data-description="{{ item.description|escape }}"
+                    tabindex="0"
+                    role="button"
+                    aria-label="Открыть работу: {{ item.display_title }}">
+                <img src="{{ item.image.url }}"
+                     alt="{{ item.display_title }}"
+                     loading="lazy">
+                <figcaption class="portfolio-caption">
+                    {% if item.title %}<h3 class="portfolio-title">{{ item.title }}</h3>{% endif %}
+                    <span class="portfolio-icon" aria-hidden="true">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </span>
+                </figcaption>
+            </figure>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Просмотр работы">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Закрыть">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+    <button class="lightbox-prev" id="lightbox-prev" aria-label="Предыдущая работа">
+        <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <button class="lightbox-next" id="lightbox-next" aria-label="Следующая работа">
+        <i class="fa-solid fa-chevron-right"></i>
+    </button>
+    <figure class="lightbox-content" id="lightbox-content">
+        <img src="" alt="" id="lightbox-image">
+        <figcaption class="lightbox-caption" id="lightbox-caption"></figcaption>
+    </figure>
+</div>
+{% endif %}
+
+<!-- FAQ -->
+<section class="section faq-section" id="faq">
+    <div class="container container-narrow">
+        <div class="section-header">
+            <span class="section-eyebrow">Вопросы и ответы</span>
+            <h2 class="section-title">Часто задаваемые вопросы</h2>
+        </div>
+
+        <div class="faq-list" id="faq-list">
+            {% for faq in faqs %}
+            <div class="faq-item">
+                <button class="faq-question" aria-expanded="false">
+                    <span>{{ faq.question }}</span>
+                    <i class="fa-solid fa-plus faq-icon"></i>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">{{ faq.answer|linebreaks }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="empty-state">Вопросов пока нет.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section contact-section" id="contact">
+    <div class="container">
+        <div class="contact-grid">
+            <div class="contact-info">
+                <span class="section-eyebrow">Свяжитесь со мной</span>
+                <h2 class="section-title">Остались вопросы?</h2>
+                <p class="contact-description">Напишите мне — с радостью отвечу на все вопросы и помогу выбрать подходящую процедуру.</p>
+
+                <ul class="contact-list">
+                    {% if site_settings.phone %}
+                    <li>
+                        <i class="fa-solid fa-phone"></i>
+                        <div>
+                            <span class="contact-label">Телефон</span>
+                            <a href="tel:{{ site_settings.phone }}">{{ site_settings.phone }}</a>
+                        </div>
+                    </li>
+                    {% endif %}
+                    {% if site_settings.address %}
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        <div>
+                            <span class="contact-label">Адрес</span>
+                            <span>{{ site_settings.address }}</span>
+                        </div>
+                    </li>
+                    {% endif %}
+                    {% if site_settings.work_hours %}
+                    <li>
+                        <i class="fa-solid fa-clock"></i>
+                        <div>
+                            <span class="contact-label">Часы работы</span>
+                            <span>{{ site_settings.work_hours }}</span>
+                        </div>
+                    </li>
+                    {% endif %}
+                </ul>
+
+                <div class="contact-socials">
+                    {% if site_settings.whatsapp %}
+                    <a href="https://wa.me/{{ site_settings.whatsapp }}" class="social-link social-link-lg" target="_blank" rel="noopener">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </a>
+                    {% endif %}
+                    {% if site_settings.instagram %}
+                    <a href="https://instagram.com/{{ site_settings.instagram }}" class="social-link social-link-lg" target="_blank" rel="noopener">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <form class="contact-form" method="post" action="{% url 'index' %}#contact" novalidate>
+                {% csrf_token %}
+                <h3 class="form-title">Написать сообщение</h3>
+
+                {# Honeypot: скрытое поле для отлова ботов #}
+                <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;opacity:0;">
+                    <label>Не заполняйте это поле {{ contact_form.website }}</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_name">Имя *</label>
+                    {{ contact_form.name }}
+                    {% if contact_form.name.errors %}
+                        <div class="form-error">{{ contact_form.name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_phone">Телефон *</label>
+                    {{ contact_form.phone }}
+                    {% if contact_form.phone.errors %}
+                        <div class="form-error">{{ contact_form.phone.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_message">Сообщение *</label>
+                    {{ contact_form.message }}
+                    {% if contact_form.message.errors %}
+                        <div class="form-error">{{ contact_form.message.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                {# CAPTCHA #}
+                <div class="form-group">
+                    {{ contact_form.captcha_question }}
+                    {{ contact_form.captcha_token }}
+                    <label for="id_captcha_answer">
+                        {{ contact_form.captcha_answer.label }} *
+                    </label>
+                    {{ contact_form.captcha_answer }}
+                    <small class="form-hint">{{ contact_form.captcha_answer.help_text }}</small>
+                    {% if contact_form.captcha_answer.errors %}
+                        <div class="form-error">{{ contact_form.captcha_answer.errors.0 }}</div>
+                    {% endif %}
+                    {% if contact_form.non_field_errors %}
+                        <div class="form-error">{{ contact_form.non_field_errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <i class="fa-solid fa-paper-plane"></i> Отправить
+                </button>
+
+                <p class="form-privacy">
+                    Нажимая «Отправить», вы соглашаетесь с обработкой персональных данных.
+                </p>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{% if portfolio_items %}
+<script src="{% static 'js/lightbox.js' %}"></script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}Запись на приём — {{ site_settings.master_name|default:"Beauty Master" }}{% endblock %}
+
+{% block content %}
+<section class="section booking-section">
+    <div class="container container-narrow">
+        <div class="section-header">
+            <span class="section-eyebrow">Онлайн-запись</span>
+            <h1 class="section-title">Запишитесь на удобное время</h1>
+            <p class="section-subtitle">Выберите услугу, дату и время — и я свяжусь с вами для подтверждения</p>
+        </div>
+
+        <form class="booking-form" method="post" novalidate id="booking-form">
+            {% csrf_token %}
+
+            {# Honeypot #}
+            <div aria-hidden="true" style="position:absolute;left:-9999px;top:-9999px;opacity:0;">
+                <label>Не заполняйте это поле {{ form.website }}</label>
+            </div>
+
+            {% if form.non_field_errors %}
+                <div class="form-error-block">
+                    {% for error in form.non_field_errors %}
+                        <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <!-- Шаг 1: Услуга -->
+            <div class="booking-step">
+                <div class="booking-step-header">
+                    <span class="booking-step-number">1</span>
+                    <h3 class="booking-step-title">Выберите услугу</h3>
+                </div>
+                <div class="form-group">
+                    {{ form.service }}
+                    {% if form.service.errors %}
+                        <div class="form-error">{{ form.service.errors.0 }}</div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Шаг 2: Дата -->
+            <div class="booking-step">
+                <div class="booking-step-header">
+                    <span class="booking-step-number">2</span>
+                    <h3 class="booking-step-title">Выберите дату</h3>
+                </div>
+                <div class="calendar-wrapper" id="calendar"
+                     data-today="{{ today }}"
+                     data-max-date="{{ max_date }}">
+                    <!-- Календарь отрисуется через JS -->
+                </div>
+                {{ form.date }}
+                {% if form.date.errors %}
+                    <div class="form-error">{{ form.date.errors.0 }}</div>
+                {% endif %}
+            </div>
+
+            <!-- Шаг 3: Время -->
+            <div class="booking-step" id="time-step" style="display:none;">
+                <div class="booking-step-header">
+                    <span class="booking-step-number">3</span>
+                    <h3 class="booking-step-title">Выберите время</h3>
+                </div>
+                <div class="slots-container" id="slots-container">
+                    <p class="slots-hint">Сначала выберите дату</p>
+                </div>
+                {{ form.time }}
+                {% if form.time.errors %}
+                    <div class="form-error">{{ form.time.errors.0 }}</div>
+                {% endif %}
+                <p class="booking-note">
+                    <i class="fa-solid fa-circle-info"></i>
+                    Интервал между записями — {{ slot_interval }} минут
+                </p>
+            </div>
+
+            <!-- Шаг 4: Ваши данные -->
+            <div class="booking-step" id="contact-step" style="display:none;">
+                <div class="booking-step-header">
+                    <span class="booking-step-number">4</span>
+                    <h3 class="booking-step-title">Ваши контактные данные</h3>
+                </div>
+
+                <div class="form-group">
+                    <label for="id_name">Имя *</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}
+                        <div class="form-error">{{ form.name.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_phone">Телефон *</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <div class="form-error">{{ form.phone.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_comment">Комментарий</label>
+                    {{ form.comment }}
+                </div>
+
+                <div class="booking-summary" id="booking-summary"></div>
+
+                <button type="submit" class="btn btn-primary btn-block btn-lg">
+                    <i class="fa-solid fa-check"></i> Подтвердить запись
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/booking.js' %}"></script>
+{% endblock %}

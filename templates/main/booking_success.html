@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Запись подтверждена — {{ site_settings.master_name|default:"Beauty Master" }}{% endblock %}
+
+{% block content %}
+<section class="section success-section">
+    <div class="container container-narrow">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <h1 class="success-title">Запись успешно создана!</h1>
+            <p class="success-subtitle">Я свяжусь с вами в ближайшее время для подтверждения</p>
+
+            <div class="success-details">
+                <div class="success-detail-row">
+                    <span class="success-detail-label">Клиент:</span>
+                    <span class="success-detail-value">{{ booking.name }}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="success-detail-label">Телефон:</span>
+                    <span class="success-detail-value">{{ booking.phone }}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="success-detail-label">Услуга:</span>
+                    <span class="success-detail-value">{{ booking.service.title }}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="success-detail-label">Дата:</span>
+                    <span class="success-detail-value">{{ booking.date|date:"d.m.Y" }}</span>
+                </div>
+                <div class="success-detail-row">
+                    <span class="success-detail-label">Время:</span>
+                    <span class="success-detail-value">{{ booking.time|time:"H:i" }}</span>
+                </div>
+            </div>
+
+            <div class="success-actions">
+                <a href="{{ whatsapp_link }}" class="btn btn-primary btn-lg" target="_blank" rel="noopener">
+                    <i class="fa-brands fa-whatsapp"></i> Написать в WhatsApp
+                </a>
+                <a href="{% url 'index' %}" class="btn btn-outline btn-lg">
+                    <i class="fa-solid fa-house"></i> На главную
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

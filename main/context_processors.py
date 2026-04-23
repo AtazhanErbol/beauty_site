@@ -1,0 +1,10 @@
+from .models import SiteSettings
+
+
+def site_settings(request):
+    """Добавляет настройки сайта во все шаблоны."""
+    try:
+        settings_obj = SiteSettings.load()
+    except Exception:
+        settings_obj = None
+    return {'site_settings': settings_obj}

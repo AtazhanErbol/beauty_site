@@ -92,7 +92,7 @@ class Service(models.Model):
     )
     description = models.TextField('Полное описание', blank=True)
     price = models.DecimalField(
-        'Цена (₽)', max_digits=8, decimal_places=2,
+        'Цена (₸)', max_digits=8, decimal_places=2,
         validators=[MinValueValidator(0)]
     )
     duration_minutes = models.PositiveIntegerField(

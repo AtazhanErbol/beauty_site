@@ -88,6 +88,11 @@ def booking_page(request):
             if form.is_valid():
                 booking = form.save()
                 send_booking_notifications(booking)
+                try:
+                    from .telegram_bot import send_telegram_booking
+                    send_telegram_booking(booking)
+                except Exception as e:
+                    print(f'Telegram ошибка: {e}')
                 whatsapp_link = build_whatsapp_booking_link(booking)
                 return render(request, 'main/booking_success.html', {
                     'booking': booking,

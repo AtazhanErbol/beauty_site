@@ -72,7 +72,7 @@
                 <h3 class="service-title">{{ service.title }}</h3>
                 <p class="service-description">{{ service.short_description }}</p>
                 <div class="service-meta">
-                    <span class="service-price">{{ service.price|floatformat:0 }} ₽</span>
+                    <span class="service-price">от {{ service.price|floatformat:0 }} ₸</span>
                     <span class="service-duration"><i class="fa-regular fa-clock"></i> {{ service.duration_minutes }} мин.</span>
                 </div>
                 <a href="{% url 'booking' %}?service={{ service.id }}" class="btn btn-primary btn-block">
